@@ -1,5 +1,5 @@
 from app.extensions import db
-from app.recipes.models import Recipe, RecipeIngredient, Ingredient
+from app.recipes.models import Recipe, RecipeIngredient, Ingredient, FavoriteRecipe
 
 def create_recipe(data):
     title = data.get('title')
@@ -56,3 +56,40 @@ def delete_recipe(recipe_id):
     db.session.delete(recipe)
     db.session.commit()
     return {"message": "Recipe deleted successfully"}, 200
+
+def add_to_favorites(user_id, recipe_id):
+    # Перевірка, чи рецепт існує
+    recipe = Recipe.query.get(recipe_id)
+    if not recipe:
+        return {"message": "Recipe not found"}, 404
+
+    # Перевірка, чи вже в улюблених
+    if FavoriteRecipe.query.filter_by(user_id=user_id, recipe_id=recipe_id).first():
+        return {"message": "Recipe is already in favorites"}, 400
+
+    favorite = FavoriteRecipe(user_id=user_id, recipe_id=recipe_id)
+    db.session.add(favorite)
+    db.session.commit()
+    return {"message": "Recipe added to favorites"}, 201
+
+def remove_from_favorites(user_id, recipe_id):
+    favorite = FavoriteRecipe.query.filter_by(user_id=user_id, recipe_id=recipe_id).first()
+    if not favorite:
+        return {"message": "Recipe not found in favorites"}, 404
+
+    db.session.delete(favorite)
+    db.session.commit()
+    return {"message": "Recipe removed from favorites"}, 200
+
+def get_favorites(user_id):
+    favorites = FavoriteRecipe.query.filter_by(user_id=user_id).all()
+    result = []
+    for favorite in favorites:
+        result.append({
+            "id": favorite.recipe.id,
+            "title": favorite.recipe.title,
+            "description": favorite.recipe.description,
+            "time_to_cook": favorite.recipe.time_to_cook,
+            "servings": favorite.recipe.servings
+        })
+    return result, 200
