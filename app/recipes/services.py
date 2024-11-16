@@ -24,13 +24,16 @@ def create_recipe(data):
     for ingredient_name in ingredients:
         ingredient = Ingredient.query.filter_by(name=ingredient_name).first()
         if not ingredient:
+            # Якщо інгредієнт не існує, створюємо новий
             ingredient = Ingredient(name=ingredient_name)
             db.session.add(ingredient)
+            db.session.commit()  # Зберігаємо інгредієнт у базі, щоб отримати його ID
         recipe_ingredient = RecipeIngredient(recipe_id=new_recipe.id, ingredient_id=ingredient.id)
         db.session.add(recipe_ingredient)
 
     db.session.commit()
     return {"message": "Recipe created successfully"}, 201
+
 
 def get_recipes():
     recipes = Recipe.query.all()
