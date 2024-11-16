@@ -1,4 +1,5 @@
 from app.extensions import db
+from sqlalchemy.orm import joinedload
 from app.recipes.models import Recipe, RecipeIngredient, Ingredient, FavoriteRecipe
 
 def create_recipe(data):
@@ -92,4 +93,42 @@ def get_favorites(user_id):
             "time_to_cook": favorite.recipe.time_to_cook,
             "servings": favorite.recipe.servings
         })
+    return result, 200
+
+def filter_recipes(filters):
+    query = Recipe.query
+
+    # Фільтрація за інгредієнтами
+    if 'ingredients' in filters:
+        ingredient_names = filters['ingredients']
+        query = query.join(RecipeIngredient).join(Ingredient).filter(
+            Ingredient.name.in_(ingredient_names)
+        )
+
+    # Фільтрація за часом приготування
+    if 'max_time' in filters:
+        max_time = filters['max_time']
+        query = query.filter(Recipe.time_to_cook <= max_time)
+
+    # Пошук за назвою або описом
+    if 'search' in filters:
+        search_term = f"%{filters['search']}%"
+        query = query.filter(
+            Recipe.title.ilike(search_term) | Recipe.description.ilike(search_term)
+        )
+
+    # Виконати запит
+    recipes = query.options(joinedload(Recipe.ingredients)).all()
+
+    # Підготовка відповіді
+    result = []
+    for recipe in recipes:
+        result.append({
+            "id": recipe.id,
+            "title": recipe.title,
+            "description": recipe.description,
+            "time_to_cook": recipe.time_to_cook,
+            "servings": recipe.servings
+        })
+
     return result, 200

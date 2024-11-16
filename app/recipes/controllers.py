@@ -1,6 +1,6 @@
 from flask import Blueprint, request
 from app.recipes.services import create_recipe, get_recipes, delete_recipe, add_to_favorites, remove_from_favorites, \
-    get_favorites
+    get_favorites, filter_recipes
 
 recipes_bp = Blueprint('recipes', __name__)
 
@@ -33,3 +33,13 @@ def remove_favorite(recipe_id):
 def list_favorites():
     user_id = request.args.get('user_id')  # У реальному додатку user_id береться з токена
     return get_favorites(user_id)
+
+@recipes_bp.route('/filter', methods=['GET'])
+def filter_recipes_api():
+    filters = request.args.to_dict(flat=True)
+
+    # Розділення інгредієнтів на список
+    if 'ingredients' in filters:
+        filters['ingredients'] = filters['ingredients'].split(',')
+
+    return filter_recipes(filters)
