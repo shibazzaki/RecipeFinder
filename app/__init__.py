@@ -5,6 +5,7 @@ from .recipes.controllers import recipes_bp
 from app.extensions import db
 from app.auth.models import User, Admin
 from app.recipes.models import Recipe, Ingredient, RecipeIngredient, FavoriteRecipe
+from flasgger import Swagger
 
 def create_app():
     app = Flask(__name__)
