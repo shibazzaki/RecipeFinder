@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Add a Recipe</h1>
+<form method="post" action="/recipes/add">
+    <div class="mb-3">
+        <label for="title" class="form-label">Title</label>
+        <input type="text" class="form-control" id="title" name="title" required>
+    </div>
+    <div class="mb-3">
+        <label for="description" class="form-label">Description</label>
+        <textarea class="form-control" id="description" name="description"></textarea>
+    </div>
+    <div class="mb-3">
+        <label for="steps" class="form-label">Steps</label>
+        <textarea class="form-control" id="steps" name="steps" required></textarea>
+    </div>
+    <div class="mb-3">
+        <label for="time_to_cook" class="form-label">Time to Cook (mins)</label>
+        <input type="number" class="form-control" id="time_to_cook" name="time_to_cook" required>
+    </div>
+    <div class="mb-3">
+        <label for="servings" class="form-label">Servings</label>
+        <input type="number" class="form-control" id="servings" name="servings" required>
+    </div>
+    <div class="mb-3">
+        <label for="ingredients" class="form-label">Ingredients (comma-separated)</label>
+        <input type="text" class="form-control" id="ingredients" name="ingredients" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Add Recipe</button>
+</form>
+{% endblock %}

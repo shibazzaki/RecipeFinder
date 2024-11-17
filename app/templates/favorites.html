@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Favorite Recipes</h1>
+<ul class="list-group">
+    {% for recipe in favorites %}
+    <li class="list-group-item">
+        <h5>{{ recipe.title }}</h5>
+        <p>{{ recipe.description }}</p>
+        <p><strong>Time to Cook:</strong> {{ recipe.time_to_cook }} mins</p>
+        <a href="/favorites/remove/{{ recipe.id }}" class="btn btn-sm btn-danger">Remove from Favorites</a>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block content %}
+<h1>Welcome to Recipe Finder</h1>
+
+{% if session['user_id'] is defined %}
+    <!-- Якщо користувач авторизований -->
+    <h2>Your Favorite Recipes</h2>
+    <ul class="list-group">
+        {% for recipe in favorites %}
+        <li class="list-group-item">
+            <h5>{{ recipe.title }}</h5>
+            <p>{{ recipe.description }}</p>
+            <p><strong>Time to Cook:</strong> {{ recipe.time_to_cook }} mins</p>
+            <a href="/favorites/remove/{{ recipe.id }}" class="btn btn-sm btn-danger">Remove from Favorites</a>
+        </li>
+        {% endfor %}
+    </ul>
+
+    <h2>All Recipes</h2>
+    <ul class="list-group">
+        {% for recipe in recipes %}
+        <li class="list-group-item">
+            <h5>{{ recipe.title }}</h5>
+            <p>{{ recipe.description }}</p>
+            <p><strong>Time to Cook:</strong> {{ recipe.time_to_cook }} mins</p>
+            <a href="/favorites/add/{{ recipe.id }}" class="btn btn-sm btn-success">Add to Favorites</a>
+        </li>
+        {% endfor %}
+    </ul>
+{% else %}
+    <!-- Якщо користувач не авторизований -->
+    <h2>Login</h2>
+    <form method="post" action="/login">
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control" id="password" name="password" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Login</button>
+    </form>
+
+    <h2>Register</h2>
+    <form method="post" action="/register">
+        <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input type="password" class="form-control" id="password" name="password" required>
+        </div>
+        <button type="submit" class="btn btn-primary">Register</button>
+    </form>
+{% endif %}
+{% endblock %}

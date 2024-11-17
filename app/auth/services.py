@@ -26,4 +26,4 @@ def login_user(data):
         return {"message": "Invalid credentials"}, 401
 
     access_token = create_access_token(identity=user.id)
-    return {"access_token": access_token}, 200
+    return {"access_token": access_token, "user_id": user.id}, 200

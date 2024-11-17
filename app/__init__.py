@@ -1,6 +1,7 @@
 from flask import Flask
 from .extensions import db, migrate, jwt, swagger
 from .auth.controllers import auth_bp
+from .main.controllers import main_bp
 from .recipes.controllers import recipes_bp
 from app.extensions import db
 from app.auth.models import User, Admin
@@ -20,5 +21,6 @@ def create_app():
     # Реєстрація blueprints
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(recipes_bp, url_prefix='/recipes')
+    app.register_blueprint(main_bp)  # Без префікса
 
     return app
