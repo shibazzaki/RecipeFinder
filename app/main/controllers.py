@@ -4,7 +4,7 @@ from app.auth.services import register_user, login_user
 from app.decorators import login_required
 from app.recipes.models import TriedRecipe
 from app.recipes.services import get_recipes, add_to_favorites, get_favorites, create_recipe, delete_recipe, \
-    remove_from_favorites
+    remove_from_favorites, filter_recipes
 
 from app.auth.models import User
 
@@ -160,6 +160,24 @@ def profile():
         return redirect(url_for('main.index'))
 
     return render_template('profile.html', user=user)
+
+@main_bp.route('/search', methods=['GET', 'POST'])
+def search_recipes():
+    recipes = []
+    filters = {"ingredients": [], "max_time": None, "search": None}
+
+    if request.method == 'POST':
+        filters.update({
+            "ingredients": request.form.get('ingredients', '').split(','),
+            "max_time": request.form.get('max_time'),
+            "search": request.form.get('search')
+        })
+
+        # Видаляємо порожні значення
+        filters['ingredients'] = [i.strip() for i in filters['ingredients'] if i.strip()]
+        recipes, _ = filter_recipes(filters)
+
+    return render_template('search.html', recipes=recipes, filters=filters)
 
 
 
