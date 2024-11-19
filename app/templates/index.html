@@ -10,7 +10,7 @@
             <a href="/recipes" class="btn btn-primary w-100">View All Recipes</a>
         </div>
         <div class="col-md-4">
-            <a href="/favorites" class="btn btn-success w-100">Your Favorite Recipes</a>
+            <a href="/search" class="btn btn-success w-100">Find Recipes</a>
         </div>
         <div class="col-md-4">
             <a href="/recipes/add" class="btn btn-warning w-100">Add a New Recipe</a>
@@ -36,7 +36,9 @@
                 <div class="card-body">
                     <h5 class="card-title">{{ recipe.title }}</h5>
                     <p class="card-text">{{ recipe.description }}</p>
-                    <a href="/favorites/remove/{{ recipe.id }}" class="btn btn-danger">Remove</a>
+                     <form action="/favorites/remove/{{ recipe.id }}" method="post" class="d-inline">
+                        <button type="submit" class="btn btn-sm btn-danger">Remove from Favorites</button>
+                    </form>
                 </div>
             </div>
         </div>

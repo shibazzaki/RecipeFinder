@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Search Recipes</h1>
+
+    <!-- Форма для фільтрації -->
+    <form method="post" action="/search">
+        <div class="mb-3">
+            <label for="ingredients" class="form-label">Ingredients (comma-separated)</label>
+            <input type="text" class="form-control" id="ingredients" name="ingredients" placeholder="e.g. tomato, cheese, basil">
+        </div>
+        <div class="mb-3">
+            <label for="max_time" class="form-label">Max Cooking Time (minutes)</label>
+            <input type="number" class="form-control" id="max_time" name="max_time" placeholder="e.g. 30">
+        </div>
+        <div class="mb-3">
+            <label for="search" class="form-label">Search Term</label>
+            <input type="text" class="form-control" id="search" name="search" placeholder="e.g. pizza">
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Search</button>
+    </form>
+
+    <!-- Відображення результатів -->
+    {% if recipes %}
+    <h2 class="text-center mt-4">Search Results</h2>
+    <ul class="list-group">
+        {% for recipe in recipes %}
+        <li class="list-group-item">
+            <h5>{{ recipe.title }}</h5>
+            <p>{{ recipe.description }}</p>
+            <p><strong>Time to Cook:</strong> {{ recipe.time_to_cook }} mins</p>
+            <p><strong>Servings:</strong> {{ recipe.servings }}</p>
+        </li>
+        {% endfor %}
+    </ul>
+    {% elif filters %}
+    <p class="text-center mt-4">No recipes found. Try adjusting your search filters.</p>
+    {% endif %}
+</div>
+{% endblock %}

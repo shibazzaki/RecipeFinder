@@ -124,15 +124,21 @@ def remove_recipe(recipe_id):
         flash('Failed to delete recipe!', 'danger')
     return redirect(url_for('main.recipes'))
 
-@main_bp.route('/favorites/remove/<int:recipe_id>')
-def remove_favorite(recipe_id):
-    user_id = 1  # Симулюємо авторизованого користувача
-    response, status = remove_from_favorites(user_id, recipe_id)  # Використовуємо API-сервіс
+@main_bp.route('/favorites/remove/<int:recipe_id>', methods=['POST'])
+def remove_favorite_ui(recipe_id):
+    """Видаляє рецепт із улюблених через Web UI."""
+    if 'user_id' not in session:
+        flash("You need to log in to perform this action.", "danger")
+        return redirect(url_for('main.index'))
+
+    user_id = session['user_id']
+    response, status = remove_from_favorites(user_id, recipe_id)
+
     if status == 200:
-        flash('Recipe removed from favorites!', 'success')
+        flash("Recipe removed from favorites.", "success")
     else:
-        flash('Failed to remove recipe from favorites!', 'danger')
-    return redirect(url_for('main.favorites'))
+        flash(response.get("message", "An error occurred."), "danger")
+    return redirect(url_for('main.index'))
 
 @main_bp.route('/logout')
 def logout():
@@ -154,5 +160,7 @@ def profile():
         return redirect(url_for('main.index'))
 
     return render_template('profile.html', user=user)
+
+
 
 
