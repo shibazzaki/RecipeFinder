@@ -1,0 +1,28 @@
+body {
+    background-color: #f8f9fa;
+}
+.container {
+    max-width: 900px;
+}
+.card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    transition: transform 0.2s ease;
+}
+.card:hover {
+    transform: scale(1.02);
+}
+
+.navbar .logout-btn {
+    background-color: #dc3545;
+    color: white;
+    border-radius: 5px;
+    padding: 5px 10px;
+    text-decoration: none;
+}
+.navbar .logout-btn:hover {
+    background-color: #c82333;
+    color: white;
+}
+
+

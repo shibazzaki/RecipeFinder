@@ -1,7 +1,8 @@
-from flask import Blueprint, request
+from flask import Blueprint, request, jsonify, session, redirect, flash, url_for
 from app.recipes.services import create_recipe, get_recipes, delete_recipe, add_to_favorites, remove_from_favorites, \
     get_favorites, filter_recipes
 
+from app.recipes.services import mark_recipe_as_tried
 recipes_bp = Blueprint('recipes', __name__)
 
 @recipes_bp.route('/', methods=['POST'])
@@ -109,38 +110,40 @@ def remove_recipe(recipe_id):
 @recipes_bp.route('/favorites', methods=['POST'])
 def add_favorite():
     """
-        Add a recipe to favorites
-        ---
-        tags:
-          - Favorites
-        parameters:
-          - name: body
-            in: body
-            required: true
-            schema:
-              type: object
-              required:
-                - user_id
-                - recipe_id
-              properties:
-                user_id:
-                  type: integer
-                  description: User ID
-                recipe_id:
-                  type: integer
-                  description: Recipe ID
-        responses:
-          201:
-            description: Recipe added to favorites
-          400:
-            description: Recipe is already in favorites
-          404:
-            description: Recipe not found
-        """
+    Add a recipe to favorites
+    ---
+    tags:
+      - Favorites
+    parameters:
+      - name: body
+        in: body
+        required: true
+        schema:
+          type: object
+          required:
+            - recipe_id
+          properties:
+            recipe_id:
+              type: integer
+              description: Recipe ID
+    responses:
+      201:
+        description: Recipe added to favorites
+      400:
+        description: Recipe is already in favorites
+      404:
+        description: Recipe not found
+    """
+    if 'user_id' not in session:
+        return jsonify({"message": "Unauthorized"}), 401
+
     data = request.get_json()
-    user_id = data.get('user_id')  # У реальному додатку user_id береться з токена
     recipe_id = data.get('recipe_id')
-    return add_to_favorites(user_id, recipe_id)
+    user_id = session['user_id']
+
+    response, status = add_to_favorites(user_id, recipe_id)
+    return jsonify(response), status
+
 
 @recipes_bp.route('/favorites/<int:recipe_id>', methods=['DELETE'])
 def remove_favorite(recipe_id):
@@ -240,3 +243,54 @@ def filter_recipes_api():
         filters['ingredients'] = filters['ingredients'].split(',')
 
     return filter_recipes(filters)
+
+
+
+@recipes_bp.route('/tried/<int:recipe_id>', methods=['POST'])
+def mark_as_tried(recipe_id):
+    """
+    Mark a recipe as tried
+    ---
+    tags:
+      - Recipes
+    parameters:
+      - name: recipe_id
+        in: path
+        required: true
+        type: integer
+        description: ID of the recipe to mark as tried
+      - name: Authorization
+        in: header
+        required: true
+        type: string
+        description: Bearer token for user authentication
+    responses:
+      200:
+        description: Recipe successfully marked as tried
+      400:
+        description: Recipe already marked as tried
+      401:
+        description: Unauthorized user
+      404:
+        description: Recipe not found
+    """
+    if 'user_id' not in session:
+        if request.is_json:  # If API request
+            return jsonify({"message": "Unauthorized"}), 401
+        else:  # If request is from Web UI
+            flash('You need to log in to perform this action.', 'danger')
+            return redirect(url_for('recipes.list_recipes'))
+
+    user_id = session['user_id']
+    response, status = mark_recipe_as_tried(user_id, recipe_id)
+
+    # If request is API
+    if request.is_json:
+        return jsonify(response), status
+
+    # If request is from Web UI
+    if status == 200:
+        flash('Recipe marked as tried!', 'success')
+    else:
+        flash(response.get('message', 'An error occurred.'), 'danger')
+    return redirect(url_for('recipes.list_recipes'))

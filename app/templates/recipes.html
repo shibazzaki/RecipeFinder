@@ -1,14 +1,86 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Recipes</h1>
-<ul class="list-group">
-    {% for recipe in recipes %}
-    <li class="list-group-item">
-        <h5>{{ recipe.title }}</h5>
-        <p>{{ recipe.description }}</p>
-        <a href="#" class="btn btn-sm btn-primary">View</a>
-        <a href="/favorites/add/{{ recipe.id }}" class="btn btn-sm btn-success">Add to Favorites</a>
-    </li>
-    {% endfor %}
-</ul>
+<div class="container mt-4">
+    <h1 class="text-center mb-4">All Recipes</h1>
+    <ul class="list-group">
+        {% for recipe in recipes %}
+        <li class="list-group-item" id="recipe-{{ recipe.id }}">
+            <h5>{{ recipe.title }}</h5>
+            <p>{{ recipe.description }}</p>
+            <p><strong>Time to Cook:</strong> {{ recipe.time_to_cook }} mins</p>
+            <p><strong>Servings:</strong> {{ recipe.servings }}</p>
+
+            <!-- Позначення як випробуваного -->
+            {% if recipe.id in tried_recipes %}
+            <span class="badge bg-success">Tried</span>
+            {% else %}
+            <button class="btn btn-sm btn-secondary mark-tried-btn" data-recipe-id="{{ recipe.id }}">Mark as Tried</button>
+            {% endif %}
+
+            <!-- Додавання до улюблених -->
+            {% if recipe.id in favorite_recipes %}
+            <span class="badge bg-primary">Favorite</span>
+            {% else %}
+            <button class="btn btn-sm btn-success add-favorite-btn" data-recipe-id="{{ recipe.id }}">Add to Favorites</button>
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+</div>
+
+<!-- JavaScript для інтерактивності -->
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Логіка для позначення як випробуваного
+        document.querySelectorAll('.mark-tried-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const recipeId = this.getAttribute('data-recipe-id');
+                fetch(`/recipes/tried/${recipeId}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.message === "Recipe marked as tried") {
+                        const listItem = document.getElementById(`recipe-${recipeId}`);
+                        listItem.innerHTML += '<span class="badge bg-success">Tried</span>';
+                        this.remove();  // Видалення кнопки
+                    } else {
+                        alert(data.message);
+                    }
+                })
+                .catch(error => alert('An error occurred: ' + error));
+            });
+        });
+
+        // Логіка для додавання до улюблених
+        document.querySelectorAll('.add-favorite-btn').forEach(button => {
+    button.addEventListener('click', function () {
+        const recipeId = this.getAttribute('data-recipe-id');
+        console.log(`Adding recipe ${recipeId} to favorites`);
+        fetch('/recipes/favorites', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ recipe_id: recipeId })
+        })
+        .then(response => {
+            console.log(`Response status: ${response.status}`);
+            return response.json();
+        })
+        .then(data => {
+            if (data.message === "Recipe added to favorites") {
+                const listItem = document.getElementById(`recipe-${recipeId}`);
+                listItem.innerHTML += '<span class="badge bg-primary">Favorite</span>';
+                this.remove();  // Видалення кнопки
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => alert('An error occurred: ' + error));
+    });
+});
+
+    });
+
+</script>
 {% endblock %}

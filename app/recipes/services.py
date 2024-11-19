@@ -1,6 +1,7 @@
 from app.extensions import db
 from sqlalchemy.orm import joinedload
-from app.recipes.models import Recipe, RecipeIngredient, Ingredient, FavoriteRecipe
+from app.recipes.models import Recipe, RecipeIngredient, Ingredient, FavoriteRecipe, TriedRecipe
+
 
 def create_recipe(data):
     title = data.get('title')
@@ -132,3 +133,18 @@ def filter_recipes(filters):
         })
 
     return result, 200
+
+
+def mark_recipe_as_tried(user_id, recipe_id):
+    # Перевіряємо, чи вже позначено як "випробувано"
+    existing_entry = TriedRecipe.query.filter_by(user_id=user_id, recipe_id=recipe_id).first()
+    if existing_entry:
+        return {"message": "Recipe already marked as tried"}, 400
+
+    # Додаємо запис у базу даних
+    tried_recipe = TriedRecipe(user_id=user_id, recipe_id=recipe_id)
+    db.session.add(tried_recipe)
+    db.session.commit()
+
+    return {"message": "Recipe marked as tried"}, 200
+

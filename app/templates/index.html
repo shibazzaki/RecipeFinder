@@ -1,58 +1,50 @@
 {% extends "base.html" %}
 {% block content %}
-<h1>Welcome to Recipe Finder</h1>
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Welcome to Recipe Finder</h1>
 
-{% if session['user_id'] is defined %}
-    <!-- Якщо користувач авторизований -->
-    <h2>Your Favorite Recipes</h2>
-    <ul class="list-group">
+    <!-- Панель навігації -->
+    <div class="row mb-4">
+        {% if session['user_id'] is defined %}
+        <div class="col-md-4">
+            <a href="/recipes" class="btn btn-primary w-100">View All Recipes</a>
+        </div>
+        <div class="col-md-4">
+            <a href="/favorites" class="btn btn-success w-100">Your Favorite Recipes</a>
+        </div>
+        <div class="col-md-4">
+            <a href="/recipes/add" class="btn btn-warning w-100">Add a New Recipe</a>
+        </div>
+        {% else %}
+        <div class="col-md-6">
+            <a href="/login" class="btn btn-primary w-100">Login</a>
+        </div>
+        <div class="col-md-6">
+            <a href="/register" class="btn btn-secondary w-100">Register</a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Улюблені рецепти -->
+    {% if session['user_id'] is defined %}
+    <h2 class="text-center mb-3">Your Favorite Recipes</h2>
+    {% if favorites %}
+    <div class="row">
         {% for recipe in favorites %}
-        <li class="list-group-item">
-            <h5>{{ recipe.title }}</h5>
-            <p>{{ recipe.description }}</p>
-            <p><strong>Time to Cook:</strong> {{ recipe.time_to_cook }} mins</p>
-            <a href="/favorites/remove/{{ recipe.id }}" class="btn btn-sm btn-danger">Remove from Favorites</a>
-        </li>
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">{{ recipe.title }}</h5>
+                    <p class="card-text">{{ recipe.description }}</p>
+                    <a href="/favorites/remove/{{ recipe.id }}" class="btn btn-danger">Remove</a>
+                </div>
+            </div>
+        </div>
         {% endfor %}
-    </ul>
-
-    <h2>All Recipes</h2>
-    <ul class="list-group">
-        {% for recipe in recipes %}
-        <li class="list-group-item">
-            <h5>{{ recipe.title }}</h5>
-            <p>{{ recipe.description }}</p>
-            <p><strong>Time to Cook:</strong> {{ recipe.time_to_cook }} mins</p>
-            <a href="/favorites/add/{{ recipe.id }}" class="btn btn-sm btn-success">Add to Favorites</a>
-        </li>
-        {% endfor %}
-    </ul>
-{% else %}
-    <!-- Якщо користувач не авторизований -->
-    <h2>Login</h2>
-    <form method="post" action="/login">
-        <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input type="email" class="form-control" id="email" name="email" required>
-        </div>
-        <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
-            <input type="password" class="form-control" id="password" name="password" required>
-        </div>
-        <button type="submit" class="btn btn-primary">Login</button>
-    </form>
-
-    <h2>Register</h2>
-    <form method="post" action="/register">
-        <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input type="email" class="form-control" id="email" name="email" required>
-        </div>
-        <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
-            <input type="password" class="form-control" id="password" name="password" required>
-        </div>
-        <button type="submit" class="btn btn-primary">Register</button>
-    </form>
-{% endif %}
+    </div>
+    {% else %}
+    <p class="text-center">You have no favorite recipes yet. Add some!</p>
+    {% endif %}
+    {% endif %}
+</div>
 {% endblock %}

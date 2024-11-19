@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container mt-4">
+    <h1 class="text-center mb-4">Your Profile</h1>
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">User Details</h5>
+            <p class="card-text"><strong>User ID:</strong> {{ user.id }}</p>
+            <p class="card-text"><strong>Email:</strong> {{ user.email }}</p>
+        </div>
+    </div>
+    <div class="mt-4">
+        <a href="/recipes" class="btn btn-primary">View All Recipes</a>
+        <a href="/recipes/add" class="btn btn-success">Add a New Recipe</a>
+    </div>
+</div>
+{% endblock %}

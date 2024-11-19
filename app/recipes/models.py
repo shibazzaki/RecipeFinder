@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from app.extensions import db
 
 class Recipe(db.Model):
@@ -15,6 +17,7 @@ class Recipe(db.Model):
         lazy=True
     )
     favorites = db.relationship('FavoriteRecipe', back_populates='recipe', lazy=True)
+    tried_recipes = db.relationship('TriedRecipe', back_populates='recipe', lazy=True)
 
 
 class Ingredient(db.Model):
@@ -39,3 +42,13 @@ class FavoriteRecipe(db.Model):
     recipe_id = db.Column(db.Integer, db.ForeignKey('recipes.id'), nullable=False)
     user = db.relationship('User', back_populates='favorites')
     recipe = db.relationship('Recipe', back_populates='favorites')
+
+class TriedRecipe(db.Model):
+    __tablename__ = 'tried_recipes'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    recipe_id = db.Column(db.Integer, db.ForeignKey('recipes.id'), nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user = db.relationship('User', back_populates='tried_recipes')
+    recipe = db.relationship('Recipe', back_populates='tried_recipes')

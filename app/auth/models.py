@@ -7,6 +7,7 @@ class User(db.Model):
     password_hash = db.Column(db.String(255), nullable=False)
     favorites = db.relationship('FavoriteRecipe', back_populates='user', lazy=True)
     admin = db.relationship('Admin', back_populates='user', uselist=False, lazy=True)
+    tried_recipes = db.relationship('TriedRecipe', back_populates='user', lazy=True)
 
 class Admin(db.Model):
     __tablename__ = 'admins'
