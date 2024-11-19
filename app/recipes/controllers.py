@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify, session, redirect, flash, url_for
 from app.recipes.services import create_recipe, get_recipes, delete_recipe, add_to_favorites, remove_from_favorites, \
-    get_favorites, filter_recipes
+    get_favorites, filter_recipes, get_random_recipe
 
 from app.recipes.services import mark_recipe_as_tried
 recipes_bp = Blueprint('recipes', __name__)
@@ -294,3 +294,37 @@ def mark_as_tried(recipe_id):
     else:
         flash(response.get('message', 'An error occurred.'), 'danger')
     return redirect(url_for('recipes.list_recipes'))
+
+@recipes_bp.route('/random', methods=['GET'])
+def random_recipe():
+    """
+    Get a random recipe
+    ---
+    tags:
+      - Recipes
+    responses:
+      200:
+        description: A random recipe
+        schema:
+          type: object
+          properties:
+            id:
+              type: integer
+              description: Recipe ID
+            title:
+              type: string
+              description: Recipe title
+            description:
+              type: string
+              description: Recipe description
+            time_to_cook:
+              type: integer
+              description: Time to cook in minutes
+            servings:
+              type: integer
+              description: Number of servings
+      404:
+        description: No recipes found
+    """
+    response, status = get_random_recipe()
+    return jsonify(response), status

@@ -9,3 +9,4 @@ class Config:
     SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', 'sqlite:///fallback.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SWAGGER = {'title': 'Recipe Finder API', 'uiversion': 3}
+    SCHEDULER_API_ENABLED = True

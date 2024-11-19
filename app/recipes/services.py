@@ -1,6 +1,7 @@
 from app.extensions import db
 from sqlalchemy.orm import joinedload
 from app.recipes.models import Recipe, RecipeIngredient, Ingredient, FavoriteRecipe, TriedRecipe
+import random
 
 
 def create_recipe(data):
@@ -148,3 +149,22 @@ def mark_recipe_as_tried(user_id, recipe_id):
 
     return {"message": "Recipe marked as tried"}, 200
 
+
+def get_random_recipe():
+    """
+    Повертає випадковий рецепт.
+    """
+    recipe_count = Recipe.query.count()
+    if recipe_count == 0:
+        return {"message": "No recipes found"}, 404
+
+    random_index = random.randint(0, recipe_count - 1)
+    recipe = Recipe.query.offset(random_index).first()
+
+    return {
+        "id": recipe.id,
+        "title": recipe.title,
+        "description": recipe.description,
+        "time_to_cook": recipe.time_to_cook,
+        "servings": recipe.servings,
+    }, 200
