@@ -5,7 +5,9 @@ from .main.controllers import main_bp
 from .recipes.controllers import recipes_bp
 from app.extensions import db
 from app.auth.models import User, Admin
-from app.recipes.models import Recipe, Ingredient, RecipeIngredient, FavoriteRecipe
+from flask_admin import Admin
+from .admin_views import AdminModelView  # Імпорт кастомного класу
+from app.recipes.models import Recipe, Ingredient, RecipeIngredient, FavoriteRecipe, TriedRecipe
 from flasgger import Swagger
 
 def create_app():
@@ -17,6 +19,12 @@ def create_app():
     migrate.init_app(app, db)
     jwt.init_app(app)
     swagger.init_app(app)
+    admin = Admin(app, name='Admin Panel', template_mode='bootstrap3')
+    admin.add_view(AdminModelView(User, db.session))
+    admin.add_view(AdminModelView(Recipe, db.session))
+    admin.add_view(AdminModelView(Ingredient, db.session))
+    admin.add_view(AdminModelView(FavoriteRecipe, db.session))
+    admin.add_view(AdminModelView(TriedRecipe, db.session))
 
     # Реєстрація blueprints
     app.register_blueprint(auth_bp, url_prefix='/auth')

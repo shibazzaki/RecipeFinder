@@ -30,16 +30,24 @@ def index():
 
 @main_bp.route('/login', methods=['GET', 'POST'])
 def login():
+    """
+    Login page for Web UI.
+    """
     if request.method == 'POST':
         email = request.form['email']
         password = request.form['password']
         response, status = login_user({"email": email, "password": password})
+
         if status == 200:
             session['user_id'] = response['user_id']
+            session['is_admin'] = response.get('is_admin', False)  # Якщо ключ відсутній, встановлюємо False
             flash('Logged in successfully!', 'success')
             return redirect(url_for('main.index'))
+
         flash(response.get('message', 'Login failed!'), 'danger')
+
     return render_template('login.html')
+
 
 
 

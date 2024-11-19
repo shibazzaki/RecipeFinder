@@ -1,7 +1,8 @@
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_jwt_extended import create_access_token
 from app.extensions import db
-from app.auth.models import User
+from app.auth.models import User, Admin
+
 
 def register_user(data):
     email = data.get('email')
@@ -25,5 +26,8 @@ def login_user(data):
     if not user or not check_password_hash(user.password_hash, password):
         return {"message": "Invalid credentials"}, 401
 
+        # Перевірка, чи є користувач адміністратором
+    is_admin = Admin.query.filter_by(user_id=user.id).first() is not None
+
     access_token = create_access_token(identity=user.id)
-    return {"access_token": access_token, "user_id": user.id}, 200
+    return {"access_token": access_token, "user_id": user.id, "is_admin": is_admin}, 200
